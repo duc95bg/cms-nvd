@@ -1,9 +1,9 @@
 ---
 name: multi-language
-status: backlog
+status: completed
 created: 2026-04-15T00:00:00Z
-updated: 2026-04-15T02:48:42Z
-progress: 0%
+updated: 2026-04-15T04:05:47Z
+progress: 100%
 prd: .claude/prds/multi-language.md
 github: https://github.com/duc95bg/cms-nvd/issues/1
 ---
