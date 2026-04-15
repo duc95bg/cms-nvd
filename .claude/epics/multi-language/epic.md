@@ -2,10 +2,10 @@
 name: multi-language
 status: backlog
 created: 2026-04-15T00:00:00Z
-updated: 2026-04-15T00:00:00Z
+updated: 2026-04-15T02:48:42Z
 progress: 0%
 prd: .claude/prds/multi-language.md
-github: (will be set on sync)
+github: https://github.com/duc95bg/cms-nvd/issues/1
 ---
 
 # Epic: multi-language
