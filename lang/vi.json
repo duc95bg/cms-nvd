@@ -5,5 +5,18 @@
     "login": "Đăng nhập",
     "logout": "Đăng xuất",
     "language": "Ngôn ngữ",
-    "hello_name": "Xin chào, :name"
+    "hello_name": "Xin chào, :name",
+    "Create site": "Tạo website",
+    "Create a new site": "Tạo website mới",
+    "Template": "Mẫu giao diện",
+    "Slug": "Đường dẫn",
+    "Lowercase letters, numbers and dashes only.": "Chỉ dùng chữ thường, số và dấu gạch ngang.",
+    "Edit site": "Chỉnh sửa website",
+    "Edit": "Chỉnh sửa",
+    "Preview": "Xem trước",
+    "View live": "Xem bản công khai",
+    "Saved": "Đã lưu",
+    "Published": "Đã xuất bản",
+    "Save": "Lưu",
+    "Raw JSON list — edit carefully.": "Danh sách JSON thô — chỉnh sửa cẩn thận."
 }
