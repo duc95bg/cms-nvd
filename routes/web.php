@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
@@ -7,6 +8,18 @@ Route::get('/', function () {
     return redirect('/'.app()->getLocale());
 });
 
+// Breeze dashboard + profile
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Public locale-prefixed routes
 Route::prefix('{locale}')
     ->where(['locale' => 'en|vi'])
     ->group(function () {
@@ -23,11 +36,10 @@ Route::prefix('{locale}')
             ->name('site.show');
     });
 
-// Admin (CMS). Auth middleware lands with the future auth epic (Breeze/Jetstream).
-// Until then the controller enforces ownership manually via authorizeSite().
+// Admin CMS — requires authenticated user
 Route::prefix('admin')
     ->name('admin.')
-    ->middleware(['web' /*, 'auth' */])
+    ->middleware(['web', 'auth'])
     ->group(function () {
         Route::get('sites', [SiteController::class, 'index'])->name('sites.index');
         Route::get('sites/create', [SiteController::class, 'create'])->name('sites.create');
@@ -37,3 +49,5 @@ Route::prefix('admin')
         Route::get('sites/{site}/preview', [SiteController::class, 'preview'])->name('sites.preview');
         Route::post('sites/{site}/images', [SiteController::class, 'uploadImage'])->name('sites.images.upload');
     });
+
+require __DIR__.'/auth.php';
