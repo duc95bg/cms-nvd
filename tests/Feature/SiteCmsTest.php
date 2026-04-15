@@ -121,6 +121,35 @@ class SiteCmsTest extends TestCase
             ->assertStatus(200);
     }
 
+    public function test_admin_update_preserves_indexed_list_round_trip(): void
+    {
+        $site = $this->makeSite(['published' => false]);
+        $originalItems = $site->content['features']['items'];
+        $this->assertCount(3, $originalItems, 'sanity: seed should have 3 features');
+
+        // Simulate what the edit form actually sends for an indexed list:
+        // a JSON-encoded string, not a PHP array.
+        $this->actingAs($this->user)->put('/admin/sites/'.$site->id, [
+            'content' => [
+                'features.items' => json_encode($originalItems, JSON_UNESCAPED_UNICODE),
+                'hero.title' => $site->content['hero']['title'],
+            ],
+            'published' => '1',
+        ])->assertRedirect(route('admin.sites.edit', $site));
+
+        $fresh = $site->fresh();
+        $this->assertIsArray($fresh->content['features']['items']);
+        $this->assertCount(3, $fresh->content['features']['items']);
+        $this->assertSame($originalItems, $fresh->content['features']['items']);
+
+        // Preview must render without throwing on the foreach.
+        // App default locale is 'vi', so assert the Vietnamese title is visible.
+        $this->actingAs($this->user)
+            ->get('/admin/sites/'.$site->id.'/preview')
+            ->assertStatus(200)
+            ->assertSee($originalItems[0]['title']['vi'], false);
+    }
+
     public function test_admin_edit_rejects_non_owner(): void
     {
         $site = $this->makeSite();

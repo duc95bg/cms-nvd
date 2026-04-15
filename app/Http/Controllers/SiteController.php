@@ -78,7 +78,7 @@ class SiteController extends Controller
 
         $nested = [];
         foreach ($request->input('content', []) as $dotKey => $value) {
-            data_set($nested, $dotKey, $value);
+            data_set($nested, $dotKey, $this->decodeIfJsonArray($value));
         }
 
         $site->update([
@@ -125,5 +125,26 @@ class SiteController extends Controller
     private function authorizeSite(Site $site): void
     {
         abort_unless($site->user_id === request()->user()?->id, 403);
+    }
+
+    /**
+     * The edit form renders indexed-list nodes as a JSON textarea.
+     * On save, decode strings that parse as arrays so lists survive
+     * the round-trip. Non-JSON strings (URLs, plain text) are left alone.
+     */
+    private function decodeIfJsonArray(mixed $value): mixed
+    {
+        if (!is_string($value)) {
+            return $value;
+        }
+        $trimmed = ltrim($value);
+        if ($trimmed === '' || ($trimmed[0] !== '[' && $trimmed[0] !== '{')) {
+            return $value;
+        }
+        $decoded = json_decode($value, true);
+        if (json_last_error() !== JSON_ERROR_NONE || !is_array($decoded)) {
+            return $value;
+        }
+        return $decoded;
     }
 }
