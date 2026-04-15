@@ -10,10 +10,10 @@ Route::prefix('{locale}')
     ->where(['locale' => 'en|vi'])
     ->group(function () {
         Route::get('/', function () {
-            return view('welcome');
+            return view('home');
         })->name('home');
 
         Route::get('/about', function () {
-            return view('welcome');
+            return view('about');
         })->name('about');
     });
