@@ -15,6 +15,7 @@
             </a>
             <nav class="flex items-center gap-4">
                 <a href="/{{ app()->getLocale() }}/products" class="text-sm hover:text-blue-600">{{ __('Products') }}</a>
+                @include('partials.cart-badge')
                 @include('partials.lang-switcher')
             </nav>
         </div>
