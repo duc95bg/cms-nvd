@@ -53,8 +53,25 @@ class ProductController extends Controller
 
     public function show(string $locale, string $slug): View
     {
-        // Placeholder — full implementation in issue #24
-        abort(501, 'Not implemented yet');
+        $product = Product::where('slug', $slug)
+            ->active()
+            ->with([
+                'category.parent',
+                'images',
+                'attributes.values',
+                'variants' => fn ($q) => $q->active()->with('attributeValues'),
+            ])
+            ->firstOrFail();
+
+        $related = Product::active()
+            ->where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->with(['images', 'variants' => fn ($q) => $q->active()])
+            ->limit(4)
+            ->inRandomOrder()
+            ->get();
+
+        return view('products.show', compact('product', 'related'));
     }
 
     private function applySort($query, ?string $sort)
