@@ -91,9 +91,14 @@ class SiteController extends Controller
             ->with('status', __('Saved'));
     }
 
-    public function preview(Site $site): View
+    public function preview(Request $request, Site $site): View
     {
         $this->authorizeSite($site);
+
+        $locale = $request->query('locale');
+        if (is_string($locale) && in_array($locale, config('app.supported_locales', ['en', 'vi']), true)) {
+            app()->setLocale($locale);
+        }
 
         return view($site->template->view, ['site' => $site]);
     }
