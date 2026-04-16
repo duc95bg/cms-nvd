@@ -2,7 +2,12 @@
 
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
@@ -21,6 +26,22 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Cart (no auth, no locale prefix — session-based)
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
+
+// Checkout (no auth)
+Route::post('/checkout/process', [CheckoutController::class, 'process'])->name('checkout.process');
+
+// Payment callbacks (no auth, no CSRF)
+Route::withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->group(function () {
+    Route::get('/payment/vnpay/return', [PaymentController::class, 'vnpayReturn'])->name('payment.vnpay.return');
+    Route::get('/payment/vnpay/ipn', [PaymentController::class, 'vnpayIpn'])->name('payment.vnpay.ipn');
+    Route::get('/payment/paypal/return', [PaymentController::class, 'paypalReturn'])->name('payment.paypal.return');
+    Route::get('/payment/paypal/cancel', [PaymentController::class, 'paypalCancel'])->name('payment.paypal.cancel');
 });
 
 // Public locale-prefixed routes
@@ -47,6 +68,22 @@ Route::prefix('{locale}')
         Route::get('/product/{slug}', [ProductController::class, 'show'])
             ->where('slug', '[a-z0-9\-]+')
             ->name('products.show');
+
+        // Cart page
+        Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+
+        // Checkout page
+        Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
+
+        // Order result pages
+        Route::get('/order/success/{order}', [OrderController::class, 'success'])->name('orders.success');
+        Route::get('/order/bank-transfer/{order}', [OrderController::class, 'bankTransfer'])->name('orders.bank-transfer');
+
+        // User order history (auth)
+        Route::middleware('auth')->group(function () {
+            Route::get('/orders', [OrderController::class, 'history'])->name('orders.history');
+            Route::get('/orders/{order}', [OrderController::class, 'detail'])->name('orders.detail');
+        });
     });
 
 // API (no auth — public variant price lookup)
@@ -83,6 +120,11 @@ Route::prefix('admin')
             ->name('products.images.primary');
         Route::delete('products/{product}/images/{image}', [AdminProductController::class, 'deleteImage'])
             ->name('products.images.destroy');
+
+        // Orders
+        Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+        Route::post('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
     });
 
 require __DIR__.'/auth.php';
