@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class OrderController extends Controller
@@ -24,5 +25,23 @@ class OrderController extends Controller
             'bankAccount' => config('payment.bank_account'),
             'bankHolder' => config('payment.bank_holder'),
         ]);
+    }
+
+    public function history(string $locale): View
+    {
+        $orders = Order::forUser(auth()->id())
+            ->latest()
+            ->paginate(15);
+
+        return view('orders.history', compact('orders'));
+    }
+
+    public function detail(string $locale, Order $order): View
+    {
+        abort_unless($order->user_id === auth()->id(), 403);
+
+        $order->load(['items', 'statusLogs']);
+
+        return view('orders.detail', compact('order'));
     }
 }
