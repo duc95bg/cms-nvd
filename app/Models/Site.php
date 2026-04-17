@@ -14,13 +14,16 @@ class Site extends Model
     protected $fillable = [
         'user_id',
         'template_id',
+        'theme_id',
         'slug',
         'content',
+        'blocks',
         'published',
     ];
 
     protected $casts = [
         'content' => 'array',
+        'blocks' => 'array',
         'published' => 'boolean',
     ];
 
@@ -32,6 +35,11 @@ class Site extends Model
     public function template(): BelongsTo
     {
         return $this->belongsTo(Template::class);
+    }
+
+    public function theme(): BelongsTo
+    {
+        return $this->belongsTo(Theme::class);
     }
 
     public function media(): HasMany
