@@ -1,9 +1,9 @@
 ---
 name: cart-checkout
-status: backlog
+status: completed
 created: 2026-04-16T00:00:00Z
-updated: 2026-04-16T08:58:39Z
-progress: 0%
+updated: 2026-04-17T03:34:43Z
+progress: 100%
 prd: .claude/prds/cart-checkout.md
 github: https://github.com/duc95bg/cms-nvd/issues/28
 ---
