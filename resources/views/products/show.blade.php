@@ -103,21 +103,26 @@
                     </div>
                 @endif
 
-                {{-- Add to cart --}}
-                <button id="add-to-cart-btn"
-                        data-product-id="{{ $product->id }}"
-                        data-variant-id=""
-                        disabled
-                        class="w-full md:w-auto px-8 py-3 bg-blue-600 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition">
-                    {{ __('Add to cart') }}
-                </button>
-
-                @if ($product->variants->isEmpty())
-                    {{-- No variants — enable button if product has stock --}}
-                    <script>
-                        document.getElementById('add-to-cart-btn').disabled = {{ $product->isInStock() ? 'false' : 'true' }};
-                    </script>
+                {{-- Add to cart form --}}
+                @if (session('success'))
+                    <div class="mb-4 p-3 bg-green-100 text-green-800 rounded-lg text-sm">{{ session('success') }}</div>
                 @endif
+                @if (session('error'))
+                    <div class="mb-4 p-3 bg-red-100 text-red-800 rounded-lg text-sm">{{ session('error') }}</div>
+                @endif
+
+                <form action="/cart/add" method="POST" class="flex items-center gap-3">
+                    @csrf
+                    <input type="hidden" name="product_id" value="{{ $product->id }}">
+                    <input type="hidden" name="variant_id" id="selected-variant-id" value="">
+                    <input type="number" name="qty" value="1" min="1"
+                           class="border rounded-lg px-3 py-3 w-20 text-center">
+                    <button id="add-to-cart-btn" type="submit"
+                            {{ $product->attributes->isNotEmpty() ? 'disabled' : ($product->isInStock() ? '' : 'disabled') }}
+                            class="flex-1 md:flex-none px-8 py-3 bg-blue-600 text-white font-medium rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition">
+                        {{ __('Add to cart') }}
+                    </button>
+                </form>
             </div>
         </div>
 
@@ -197,6 +202,7 @@
                     }
 
                     cartBtn.dataset.variantId = data.variant_id;
+                    document.getElementById('selected-variant-id').value = data.variant_id;
 
                     if (data.image) {
                         mainImg.src = data.image;
@@ -205,6 +211,7 @@
                     priceEl.textContent = '{{ __("Select variant") }}';
                     cartBtn.disabled = true;
                     cartBtn.dataset.variantId = '';
+                    document.getElementById('selected-variant-id').value = '';
                     skuEl.classList.add('hidden');
                 }
             } catch (err) {
