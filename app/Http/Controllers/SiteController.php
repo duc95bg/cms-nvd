@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Site;
 use App\Models\Template;
+use App\Services\BlockRenderer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,6 +19,13 @@ class SiteController extends Controller
             ->where('published', true)
             ->firstOrFail();
 
+        // Blocks-first render: if site has blocks, render from block partials
+        if (!empty($site->blocks)) {
+            $blocksHtml = BlockRenderer::render($site->blocks);
+            return view('site.blocks-page', ['site' => $site, 'blocksHtml' => $blocksHtml]);
+        }
+
+        // Fallback: old template-based render
         return view($site->template->view, ['site' => $site]);
     }
 
@@ -98,6 +106,11 @@ class SiteController extends Controller
         $locale = $request->query('locale');
         if (is_string($locale) && in_array($locale, config('app.supported_locales', ['en', 'vi']), true)) {
             app()->setLocale($locale);
+        }
+
+        if (!empty($site->blocks)) {
+            $blocksHtml = BlockRenderer::render($site->blocks);
+            return view('site.blocks-page', ['site' => $site, 'blocksHtml' => $blocksHtml]);
         }
 
         return view($site->template->view, ['site' => $site]);
