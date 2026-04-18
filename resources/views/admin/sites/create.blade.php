@@ -17,17 +17,39 @@
 
                 <div>
                     <label for="template_id" class="block text-sm font-medium text-gray-700 mb-1">{{ __('Template') }}</label>
+                    {{-- Theme selection (block-based) --}}
+                    @if(isset($themes) && $themes->isNotEmpty())
+                        <h3 class="font-semibold mb-2">{{ __('Choose a theme') }} ({{ __('Block editor') }})</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                            @foreach ($themes as $theme)
+                                <label class="border rounded-lg p-4 cursor-pointer hover:border-blue-500 hover:bg-blue-50 transition"
+                                       :class="{'ring-2 ring-blue-500': false}">
+                                    <input type="radio" name="theme_id" value="{{ $theme->id }}" class="mr-2"
+                                           onchange="document.getElementById('template_id').removeAttribute('required')">
+                                    <span class="font-medium">{{ $theme->t('name') }}</span>
+                                    <p class="text-xs text-gray-500 mt-1">{{ $theme->t('description') }}</p>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p class="text-xs text-gray-400 mb-4">— {{ __('or') }} —</p>
+                    @endif
+
+                    {{-- Legacy template selection --}}
+                    <h3 class="font-semibold mb-2">{{ __('Template') }} ({{ __('Legacy') }})</h3>
                     <select
                         id="template_id"
                         name="template_id"
-                        required
                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 px-3 py-2 border"
                     >
+                        <option value="">{{ __('Select') }}</option>
                         @foreach ($templates as $template)
                             <option value="{{ $template->id }}">{{ $template->name }} ({{ $template->type }})</option>
                         @endforeach
                     </select>
                     @error('template_id')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                    @error('theme_id')
                         <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
