@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
             TemplateSeeder::class,
             CatalogSeeder::class,
+            ThemeSeeder::class,
+            SettingsSeeder::class,
         ]);
     }
 }

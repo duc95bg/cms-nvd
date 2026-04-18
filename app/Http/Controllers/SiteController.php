@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Site;
 use App\Models\Template;
+use App\Models\Theme;
+use App\Services\BlockRenderer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,6 +20,13 @@ class SiteController extends Controller
             ->where('published', true)
             ->firstOrFail();
 
+        // Blocks-first render: if site has blocks, render from block partials
+        if (!empty($site->blocks)) {
+            $blocksHtml = BlockRenderer::render($site->blocks);
+            return view('site.blocks-page', ['site' => $site, 'blocksHtml' => $blocksHtml]);
+        }
+
+        // Fallback: old template-based render
         return view($site->template->view, ['site' => $site]);
     }
 
@@ -35,24 +44,44 @@ class SiteController extends Controller
     {
         return view('admin.sites.create', [
             'templates' => Template::orderBy('type')->get(),
+            'themes' => Theme::active()->get(),
         ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
         $data = $request->validate([
-            'template_id' => ['required', 'exists:templates,id'],
+            'template_id' => ['nullable', 'exists:templates,id'],
+            'theme_id' => ['nullable', 'exists:themes,id'],
             'slug' => ['required', 'string', 'alpha_dash', 'max:80', 'unique:sites,slug'],
         ]);
 
-        $template = Template::findOrFail($data['template_id']);
-
-        $site = $request->user()->sites()->create([
-            'template_id' => $template->id,
+        $siteData = [
             'slug' => $data['slug'],
-            'content' => $template->default_content,
             'published' => false,
-        ]);
+        ];
+
+        // Theme-based: clone blocks_preset
+        if (!empty($data['theme_id'])) {
+            $theme = Theme::findOrFail($data['theme_id']);
+            $siteData['theme_id'] = $theme->id;
+            $siteData['blocks'] = $theme->blocks_preset;
+            $siteData['template_id'] = Template::first()?->id;
+            $siteData['content'] = Template::first()?->default_content ?? [];
+        }
+        // Template-based (legacy): clone content
+        elseif (!empty($data['template_id'])) {
+            $template = Template::findOrFail($data['template_id']);
+            $siteData['template_id'] = $template->id;
+            $siteData['content'] = $template->default_content;
+        }
+
+        $site = $request->user()->sites()->create($siteData);
+
+        // Redirect to block editor if theme-based, otherwise to content editor
+        if (!empty($data['theme_id'])) {
+            return redirect()->route('admin.sites.editor', $site);
+        }
 
         return redirect()->route('admin.sites.edit', $site);
     }
@@ -98,6 +127,11 @@ class SiteController extends Controller
         $locale = $request->query('locale');
         if (is_string($locale) && in_array($locale, config('app.supported_locales', ['en', 'vi']), true)) {
             app()->setLocale($locale);
+        }
+
+        if (!empty($site->blocks)) {
+            $blocksHtml = BlockRenderer::render($site->blocks);
+            return view('site.blocks-page', ['site' => $site, 'blocksHtml' => $blocksHtml]);
         }
 
         return view($site->template->view, ['site' => $site]);

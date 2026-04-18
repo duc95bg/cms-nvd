@@ -1,9 +1,11 @@
 <?php
 
 use App\Http\Controllers\Admin\AttributeController;
+use App\Http\Controllers\Admin\BlockEditorController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\OrderController;
@@ -125,6 +127,15 @@ Route::prefix('admin')
         Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
         Route::post('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+
+        // Block editor
+        Route::get('sites/{site}/editor', [BlockEditorController::class, 'edit'])->name('sites.editor');
+        Route::put('sites/{site}/blocks', [BlockEditorController::class, 'update'])->name('sites.blocks.update');
+        Route::post('sites/{site}/blocks/upload', [BlockEditorController::class, 'uploadImage'])->name('sites.blocks.upload');
+
+        // Settings
+        Route::get('settings', [SettingsController::class, 'edit'])->name('settings.edit');
+        Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
     });
 
 require __DIR__.'/auth.php';
