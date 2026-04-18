@@ -1,9 +1,9 @@
 ---
 name: cms-block-builder
-status: backlog
+status: completed
 created: 2026-04-16T00:00:00Z
-updated: 2026-04-17T04:01:57Z
-progress: 0%
+updated: 2026-04-18T01:39:19Z
+progress: 100%
 prd: .claude/prds/cms-block-builder.md
 github: https://github.com/duc95bg/cms-nvd/issues/40
 ---
