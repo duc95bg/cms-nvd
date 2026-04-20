@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AttributeController;
 use App\Http\Controllers\Admin\BlockEditorController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -97,6 +98,10 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['web', 'auth'])
     ->group(function () {
+        // Dashboard
+        Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        Route::redirect('/', '/admin/dashboard');
+
         // Sites
         Route::get('sites', [SiteController::class, 'index'])->name('sites.index');
         Route::get('sites/create', [SiteController::class, 'create'])->name('sites.create');

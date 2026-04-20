@@ -187,5 +187,16 @@
     "Select a category": "Chọn danh mục",
     "Theme": "Giao diện",
     "No theme": "Không có giao diện",
-    "Editor": "Trình soạn thảo"
+    "Editor": "Trình soạn thảo",
+    "Dashboard": "Bảng điều khiển",
+    "Total revenue": "Tổng doanh thu",
+    "Total orders": "Tổng đơn hàng",
+    "Today orders": "Đơn hôm nay",
+    "Pending orders": "Đơn chờ xử lý",
+    "Revenue last 7 days": "Doanh thu 7 ngày qua",
+    "Top selling products": "Sản phẩm bán chạy",
+    "Recent orders": "Đơn hàng gần đây",
+    "Rank": "Hạng",
+    "Quantity sold": "Đã bán",
+    "No data": "Chưa có dữ liệu"
 }

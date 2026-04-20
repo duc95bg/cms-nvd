@@ -187,5 +187,16 @@
     "Select a category": "Select a category",
     "Theme": "Theme",
     "No theme": "No theme",
-    "Editor": "Editor"
+    "Editor": "Editor",
+    "Dashboard": "Dashboard",
+    "Total revenue": "Total revenue",
+    "Total orders": "Total orders",
+    "Today orders": "Today's orders",
+    "Pending orders": "Pending orders",
+    "Revenue last 7 days": "Revenue last 7 days",
+    "Top selling products": "Top selling products",
+    "Recent orders": "Recent orders",
+    "Rank": "Rank",
+    "Quantity sold": "Qty sold",
+    "No data": "No data"
 }
