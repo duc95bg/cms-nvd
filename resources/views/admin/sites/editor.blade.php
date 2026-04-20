@@ -10,6 +10,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 <body class="bg-gray-100 min-h-screen" x-data="blockEditor()" x-init="initSortable()">
+    @include('admin.partials.nav')
 
     {{-- Top bar --}}
     <header class="bg-white border-b sticky top-0 z-50">

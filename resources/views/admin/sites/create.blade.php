@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
+    @include('admin.partials.nav')
     <div class="max-w-2xl mx-auto py-10 px-4">
         <div class="bg-white shadow rounded-lg p-8">
             <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ __('Create a new site') }}</h1>

@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-50 min-h-screen">
+    @include('admin.partials.nav')
     <div class="max-w-5xl mx-auto p-8">
         <div class="flex items-center justify-between mb-6">
             <div>
