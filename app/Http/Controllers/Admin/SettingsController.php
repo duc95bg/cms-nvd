@@ -24,7 +24,7 @@ class SettingsController extends Controller
 
         foreach ($fields as $key) {
             if ($request->has($key)) {
-                SettingService::set($key, $request->input($key));
+                SettingService::set($key, $request->input($key) ?? '');
             }
         }
 
