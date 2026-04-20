@@ -6,9 +6,11 @@ use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\SetupController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
+// Homepage — render main site directly
 Route::get('/', function () {
     return redirect('/'.app()->getLocale());
 });
@@ -51,9 +54,8 @@ Route::withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->group(f
 Route::prefix('{locale}')
     ->where(['locale' => 'en|vi'])
     ->group(function () {
-        Route::get('/', function () {
-            return view('home');
-        })->name('home');
+        // Homepage — render main site blocks
+        Route::get('/', HomepageController::class)->name('home');
 
         Route::get('/about', function () {
             return view('about');
@@ -98,7 +100,11 @@ Route::prefix('admin')
     ->name('admin.')
     ->middleware(['web', 'auth'])
     ->group(function () {
-        // Dashboard
+        // Setup wizard (first-time only)
+        Route::get('setup', [SetupController::class, 'index'])->name('setup');
+        Route::post('setup', [SetupController::class, 'store'])->name('setup.store');
+
+        // Dashboard (redirects to setup if not configured)
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
         Route::redirect('/', '/admin/dashboard');
 
